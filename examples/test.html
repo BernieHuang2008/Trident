@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Trident Test</title>
+</head>
+
+<body style="margin: 0;height: 100vh;">
+    <div id="trident" style="width: 100%;height: 100%;"></div>
+</body>
+
+<script src="../src/trident.js"></script>
+<script>
+    var trident = document.getElementById("trident");
+    tri = new Trident(trident, Trident.a4);
+    tri.reparse(String.raw`
+        \documentclass[12pt]{article}
+\usepackage {nopageno}
+
+% Language setting
+% Replace 'english' with e.g. 'spanish' to change the document language
+\usepackage[english]{babel}
+\usepackage{float}
+
+% Set page size and margins
+% Replace 'letterpaper' with 'a4paper' for UK/EU standard size
+\usepackage[a4paper,top=2cm,bottom=2cm,left=2cm,right=2cm,marginparwidth=1.75cm]{geometry}
+
+% Useful packages
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\usepackage{fancyhdr}%导入fancyhdr包
+\usepackage{lastpage}
+\usepackage{times}
+
+\usepackage{multirow}
+\usepackage[table,xcdraw]{xcolor}
+\usepackage{booktabs}
+
+\usepackage{indentfirst}
+\setlength{\parindent}{2em}
+
+\pagenumbering{Alpha}%设置页码格式,大写字母标页
+\pagestyle{fancy}
+\pagenumbering{arabic}
+\fancyhead[L]{}
+\fancyhead[C]{IMMC23021564}
+\fancyhead[R]{Page \thepage\ of 16}
+\fancyfoot[C]{}
+\renewcommand{\headrulewidth}{1pt}%分隔线宽度4磅
+
+\newcommand{\setParDis}{\setlength {\parskip} {0.3cm} }
+\newcommand{\setParDef}{\setlength {\parskip} {0pt} }
+
+\begin{document}
+
+
+
+\newpage
+
+\begin{center}
+	\Huge
+	~\\
+	~\\
+	IMMC 23021564
+	~\\
+	~\\
+	\normalsize
+\end{center}
+
+\begin{abstract}
+	ABS\textbf{TRACT}
+\end{abstract}
+
+\newpage
+\tableofcontents
+\newpage
+
+hello!!!!!
+
+\section{References}
+
+[1] How many acres is suitable to be a family farm? How much is the benefit? Make it clear at once. 
+
+https://www.sohu.com/a/638215125\_121124414
+
+[2] How much grass is needed to raise a cow. 
+
+http://www.lvcaod.com/zzyh/14365.html
+
+[3] Annual profits and costs of raising dairy cows. 
+
+https://zhuanlan.zhihu.com/p/346310239
+
+[4] Cost analysis of dairy farming. 
+
+https://www.muyeseed.com/gszz/444347.html
+
+[5] The cost of the photovoltaic power station. 
+
+http://www.nbyysoft.com/post/75624.html
+
+[6] Case study of Photovoltaic agricultural greenhouses. 
+
+https://www.renrendoc.com/paper/117096834.html
+
+[7] Feasibility study report of outdoor sports and leisure center project. 
+
+https://zhuanlan.zhihu.com/p/403645527
+
+[8] Estimation of the operating costs of the agricultural tourist park.  
+
+https://wenku.baidu.com/view/9859e62317791711cc7931b765ce0508763275d1.html
+
+
+\end{document}
+
+
+        `);
+</script>
+
+
+</html>
