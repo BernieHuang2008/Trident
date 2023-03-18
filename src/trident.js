@@ -1,4 +1,5 @@
 // generate a class called Trident
+
 class Trident {
 	constructor(div) {
 		this.div = div;
@@ -25,70 +26,96 @@ class Trident {
 
 	_normalizeCode(code) {
 		[
-			[/\%.+?\n/g, '\n'],
-			['\n\n', '\\TRIDENTCOMMAND_NEWLINE'],
-			['\\\\', '\\newline'],
-			[/\$\$(.+?)\$\$/g, " \begin{equation} $1 \end{equation} "],
-			[/\s+/g, ' '],
-			[/\\ /g, '\\TRIDENTCOMMAND_SPACE'],
-			['\\#', '\\TRIDENTCOMMAND_HASHTAG'],
-			['\\$', '\\TRIDENTCOMMAND_DOLLAR'],
-			['\\%', '\\TRIDENTCOMMAND_PERCENT'],
-			['\\^', '\\TRIDENTCOMMAND_CARET'],
-			['\\&', '\\TRIDENTCOMMAND_AND'],
-			['\\_', '\\TRIDENTCOMMAND_UNDERLINE'],
-			['\\{', '\\TRIDENTCOMMAND_LEFTBRACE'],
-			['\\}', '\\TRIDENTCOMMAND_RIGHTBRACE'],
-			['\\[', '\\TRIDENTCOMMAND_LEFTBRACKET'],
-			['\\]', '\\TRIDENTCOMMAND_RIGHTBRACKET'],
-			['\\(', '\\TRIDENTCOMMAND_LEFTPARENT'],
-			['\\)', '\\TRIDENTCOMMAND_RIGHTPARENT'],
-			['\\~', '\\TRIDENTCOMMAND_TILDE'],
-			[/\s+/g, ' ']
+			[/(\\[^\s]+? )([\{|\[])/g, function(a, b, c) {
+				if (b.match(/\\TRIDENTCOMMAND_/g))
+					return a;
+				return b.replaceAll(/\s/g, '') + c;
+			}], // remove space between command and bracket
+			[/\%.+?\n/g, '\n'], // remove comments
+			['\n\n', '\\TRIDENTCOMMAND_NEWLINE'], // replace empty lines to special command
+			['\\\\', '\\newline'], // replace \\ with \newline
+			[/\$\$(.+?)\$\$/g,
+				" \\begin{equation} $1 \\end{equation} "
+			], // replace $$...$$ with \begin{equation} ... \end{equation}
+			[/\s+/g, ' '], // replace multiple spaces with single space
+			[/\\ /g, '\\TRIDENTCOMMAND_SPACE'], // replace spaces with special command
+			['\\#', '\\TRIDENTCOMMAND_HASHTAG'], // replace # with special command
+			['\\$', '\\TRIDENTCOMMAND_DOLLAR'], // replace $ with special command
+			['\\%', '\\TRIDENTCOMMAND_PERCENT'], // replace % with special command
+			['\\^', '\\TRIDENTCOMMAND_CARET'], // replace ^ with special command
+			['\\&', '\\TRIDENTCOMMAND_AND'], // replace & with special command
+			['\\_', '\\TRIDENTCOMMAND_UNDERLINE'], // replace _ with special command
+			['\\{', '\\TRIDENTCOMMAND_LEFTBRACE'], // replace { with special command
+			['\\}', '\\TRIDENTCOMMAND_RIGHTBRACE'], // replace } with special command
+			['\\[', '\\TRIDENTCOMMAND_LEFTBRACKET'], // replace [ with special command
+			['\\]', '\\TRIDENTCOMMAND_RIGHTBRACKET'], // replace ] with special command
+			['\\(', '\\TRIDENTCOMMAND_LEFTPARENT'], // replace ( with special command
+			['\\)', '\\TRIDENTCOMMAND_RIGHTPARENT'], // replace ) with special command
+			['~', '\\TRIDENTCOMMAND_SPACE'], // replace ~ with space command
+			[/\s+/g, ' '], // replace multiple spaces with single space again
 		].forEach(x => {
-			code = code.replaceAll(x[0], x[1] + ' ');
+			if ((typeof x[1]) == 'string')
+				code = code.replaceAll(x[0], ' '+x[1] + ' ');
+			else
+				code = code.replaceAll(x[0], x[1]);
 		})
-		code = code.replaceAll(/\\#/g, "\\TRIDENTCOMMAND_SPACE ");
 		return code;
 	}
 
 	_parseCode(code) {
 		var i = 0;
-		const command_char = /[a-z]|[A_Z]|_|{|}|\[|\]/g;
-		const command_bracket=/\[|\(|{/g;
+		const command_char = /[a-z]|[A-Z]|_|{|}|\[|\]/g;
+		const command_bracket = /\[|{/g;
+		const command_close_bracket = /\]|}/g;
 
 		function parseCommand() {
 			var command = '\\';
 			i++;
-			var brackets='';
-			while (code[i].match(command_char)) {
+			var brackets = '';
+			var bracketed = 0;
+			while (1) {
+				if (code[i].match(command_char) == null && brackets == '')
+					break;
+				if (bracketed && brackets=='' && !code[i].match(command_bracket))
+					break;
 				command += code[i];
-				if(code[i].match(command_bracket)){
-					var ch=(code[i]=='('?')':String.fromCharCode(code[i].charCodeAt()+2))
+				if (code[i].match(command_bracket)) {
+					bracketed = 1;
+					var ch = String.fromCharCode(code[i].charCodeAt() + 2);
+					brackets += ch;
+				} else if (code[i].match(command_close_bracket)) {
+					if (code[i] == brackets[brackets.length - 1]) {
+						brackets = brackets.slice(0, brackets.length - 1);
+					} else {
+						throw `LaTeX Compile Error: Unmatched Brackets '${code[i]}' at position ${i}: ${code.slice(i - 30, i)}`;
+					}
 				}
 				i++;
-			}
+			};
 			return command;
 		}
 
-		var ref = [];
+		var tokens = [];
+		var token = ""
 
 		for (i = 0; i < code.length; i++) {
 			if (code[i] == "\\") {
+				if (token.replaceAll(/\s/g, ''))
+					tokens.push(token.replaceAll(/\s/g, ''));
+				token = "";
 				var command = parseCommand();
-				ref.push(command);
+				tokens.push(command);
 			}
+			token += code[i];
 		}
 
-		for (var j = 0; j < ref.length; j++) {
-			code.replaceAll(ref[j], "\TRIDENTCOMMAND_REPLACE" + String(j));
-		}
-
-		return [ref, code];
+		return tokens;
 	}
 
 	reparse(code) {
-		code = this._parseCode(this._normalizeCode(code));
+		code = this._normalizeCode(code);
+		console.log(code);
+		code = this._parseCode(code);
 
 		console.log(code);
 	}

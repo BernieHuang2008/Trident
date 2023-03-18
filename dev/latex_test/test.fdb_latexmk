@@ -1,5 +1,5 @@
 # Fdb version 4
-["pdflatex"] 1679099693 "g:/git/BernieHuang2008/Trident/dev/latex_test/test.tex" "test.pdf" "test" 1679099694 0
+["pdflatex"] 1679120784 "g:/git/BernieHuang2008/Trident/dev/latex_test/test.tex" "test.pdf" "test" 1679120786 0
   "d:/Software/texlive/2022/texmf-dist/fonts/enc/dvips/base/8r.enc" 1678612342 4850 80dc9bab7f31fb78a000ccfed0e27cab ""
   "d:/Software/texlive/2022/texmf-dist/fonts/map/fontname/texfonts.map" 1678613668 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "d:/Software/texlive/2022/texmf-dist/fonts/tfm/adobe/times/ptmb7t.tfm" 1678634648 2172 fd0c924230362ff848a33632ed45dc23 ""
@@ -85,11 +85,11 @@
   "d:/Software/texlive/2022/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1678637330 4662822 fe51a4cd8c9b5eb90ce78451b3c86cf2 ""
   "d:/Software/texlive/2022/texmf-var/web2c/pdftex/pdflatex.fmt" 1678637539 7883547 1c5672e9d03b1be69350e58e9d301c85 ""
   "d:/Software/texlive/2022/texmf.cnf" 1678637305 713 e69b156964470283e0530f5060668171 ""
-  "g:/git/BernieHuang2008/Trident/dev/latex_test/test.tex" 1679099692 1488 c00db1228a4e38a8ece89071837369f5 ""
-  "test.aux" 1679099694 836 235d15ec179754d8b320bbbbf066dad1 "pdflatex"
-  "test.out" 1679099694 93 e2b349429c454f1229ca81947420cf01 "pdflatex"
-  "test.tex" 1679099692 1488 c00db1228a4e38a8ece89071837369f5 ""
-  "test.toc" 1679099694 96 678ff05d3fe2846b4f69959aaa31563c "pdflatex"
+  "g:/git/BernieHuang2008/Trident/dev/latex_test/test.tex" 1679120784 1488 c00db1228a4e38a8ece89071837369f5 ""
+  "test.aux" 1679120786 836 235d15ec179754d8b320bbbbf066dad1 "pdflatex"
+  "test.out" 1679120786 93 e2b349429c454f1229ca81947420cf01 "pdflatex"
+  "test.tex" 1679120784 1488 c00db1228a4e38a8ece89071837369f5 ""
+  "test.toc" 1679120786 96 678ff05d3fe2846b4f69959aaa31563c "pdflatex"
   (generated)
   "test.aux"
   "test.log"
