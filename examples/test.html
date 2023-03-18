@@ -13,9 +13,10 @@
 <script src="../src/trident.js"></script>
 <script>
     var trident = document.getElementById("trident");
-    tri = new Trident(trident, Trident.a4);
+    tri = new Trident(trident);
     tri.reparse(String.raw`
-        \documentclass[12pt]{article}
+
+\documentclass[12pt]{article}
 \usepackage {nopageno}
 
 % Language setting
@@ -82,40 +83,12 @@ hello!!!!!
 
 \section{References}
 
-[1] How many acres is suitable to be a family farm? How much is the benefit? Make it clear at once. 
+[1] Page size and margins
 
-https://www.sohu.com/a/638215125\_121124414
-
-[2] How much grass is needed to raise a cow. 
-
-http://www.lvcaod.com/zzyh/14365.html
-
-[3] Annual profits and costs of raising dairy cows. 
-
-https://zhuanlan.zhihu.com/p/346310239
-
-[4] Cost analysis of dairy farming. 
-
-https://www.muyeseed.com/gszz/444347.html
-
-[5] The cost of the photovoltaic power station. 
-
-http://www.nbyysoft.com/post/75624.html
-
-[6] Case study of Photovoltaic agricultural greenhouses. 
-
-https://www.renrendoc.com/paper/117096834.html
-
-[7] Feasibility study report of outdoor sports and leisure center project. 
-
-https://zhuanlan.zhihu.com/p/403645527
-
-[8] Estimation of the operating costs of the agricultural tourist park.  
-
-https://wenku.baidu.com/view/9859e62317791711cc7931b765ce0508763275d1.html
-
+https://www.overleaf.com/learn/latex/Page\_size\_and\_margins
 
 \end{document}
+
 
 
         `);
