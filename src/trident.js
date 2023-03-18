@@ -64,7 +64,7 @@ class Trident {
 			while (code[i].match(command_char)) {
 				command += code[i];
 				if(code[i].match(command_bracket)){
-					
+					var ch=(code[i]=='('?')':String.fromCharCode(code[i].charCodeAt()+2))
 				}
 				i++;
 			}
