@@ -7,6 +7,11 @@
 	</head>
 
 	<body style="margin: 0;height: 100vh;">
+		<style>
+			canvas.Trident-page{
+				margin: 10px;
+			}
+		</style>
 		<div id="trident" style="width: 100%;height: 100%;text-align: center;"></div>
 	</body>
 
@@ -19,8 +24,10 @@
 		tp.config.zoom_ratio = tri.config.zoom_ratio;
 		tp.config.pen.page_border="black";
 		tp.new_page();
-		tp.draw_text(['g', 12]);
-		// tp.draw_rect([10,10]);
+		tp.draw_text(['   Land is a precious resource and how to use land reasonably is always an important topic. By', 12]);
+		tp.move_pen([0,12*PT])
+		tp.draw_text(['coordination of nature, society and economy, land planning focuses on maximizing land value', 12]);
+
 		
 		tri.reparse(String.raw`
 

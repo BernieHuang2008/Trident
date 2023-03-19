@@ -1,6 +1,7 @@
 // generate a class called Trident
 
 const PT = 0.376; // pt -> mm
+var t = 1;
 
 class TridentPen {
 	constructor(div, config) {
@@ -16,14 +17,14 @@ class TridentPen {
 		canvas.width = this.config.zoom_ratio * this.config.high_dpi * this.config.paper_size[0];
 		canvas.height = this.config.zoom_ratio * this.config.high_dpi * this.config.paper_size[1];
 
-		canvas.style.marginTop = "10px";
-		canvas.style.marginBottom = "10px";
 		canvas.style.zoom = 1 / this.config.high_dpi;
+		canvas.getContext('2d').scale(this.config.zoom_ratio * this.config.high_dpi, this.config.zoom_ratio * this
+			.config.high_dpi);
 
 		canvas.id = this.pages.length;
+		canvas.classList="Trident-page";
 		this.div.appendChild(canvas);
 		this.pages.push(canvas);
-
 
 		if (this.config.pen.page_border) {
 			canvas.style.border = `solid ${this.config.pen.page_border} 1px`;
@@ -56,8 +57,9 @@ class TridentPen {
 		const [page, x, y] = this.config.pen.pos;
 		const canvas = this.pages[page];
 		const ctx = canvas.getContext('2d');
+
 		ctx.fillStyle = this.config.pen.color;
-		ctx.scale(this.config.zoom_ratio * this.config.high_dpi, this.config.zoom_ratio * this.config.high_dpi);
+
 		return [x, y, ctx];
 	}
 
@@ -128,7 +130,7 @@ class TridentPen {
 		},
 		format_page: [
 			["_move_pen", [20, 12]],
-			// ["fill_rect", [170, 1 * PT]],
+			["fill_rect", [170, 1 * PT]],
 		]
 	}
 }
