@@ -1,5 +1,3 @@
-// generate a class called Trident
-
 const PT = 0.376; // pt -> mm
 var t = 1;
 
@@ -8,6 +6,11 @@ class TridentPen {
 		this.div = div; // div is a HTMLDivElement which act as a container
 		this.config = config; // config is a dictionary object
 		this.pages = []; // store all pages in this document (canvas)
+		this.te = new TridentLayout(this); // init Trident Layout Engine
+	}
+
+	write(text) {
+		this.te.text(text);
 	}
 
 	_testText(text) {
@@ -18,80 +21,6 @@ class TridentPen {
 		if (ctx.measureText(text).width <= text_width)
 			return ctx.measureText(text).width;
 		return false;
-	}
-
-	write(text) {
-		function print(t, _this, fit) {
-			// fit: fit text to page width
-
-			// init
-			t = t.trim();
-			var ctx = _this._ctx()[2];
-
-			// get the parmeters we need.
-			var new_y_pos = _this.config.pen.pos[2] - _this.config.margin.top + _this.config.font_size * PT;
-			var width = ctx.measureText(t).width;
-			var max_width = (_this.config.paper_size[0] - _this._ctx()[0] - _this.config.margin.right);
-
-			// get the parmeters for scalling progress.
-			var delta_width = max_width - width; // positive if text is too short, negative if text is too long
-			var space_width = ctx.measureText(' ').width;
-			var space_num = t.split(' ').length - 1;
-			var delta_space_width = Math.min(delta_width / space_num, 1.5); // prevent infinity.
-
-			// if need scalling
-			if (fit) {
-				space_width += delta_space_width;
-			}
-
-			// print, and scalling if need.
-			var words = t.split(' ');
-			words.forEach(word => {
-				var word_width = ctx.measureText(word).width;
-				_this.drawText([word]);
-				_this.move([word_width + space_width, 0]);
-			})
-
-			// new line.
-			_this.moveTo([0, new_y_pos]);
-		}
-
-		var lst = text.split(' ');
-		var line = "";
-
-		lst.forEach(word => {
-			if (this._testText(line + " " + word) == false) {
-				if (this._testText(line + " ") == false) {
-					// if line too long is because of the adding space, then print line without space
-					print(line, this, 1);
-					line = word;
-				} else {
-					for (var i = 1; i < word.length; i++) {
-						// adding letter by letter
-						if (this._testText(line + " " + word.slice(0, i) + '-') == false) {
-							// if line too long is because of the adding letter, then print line without this letter.
-							if (word.slice(i).length <= 2) {
-								// if the rest of the word is too short, then print the whole word in this line.
-								print(line + " " + word, this, 1)
-								line = "";
-							} else if (word.slice(0, i).length <= 2) {
-								// if the word in this line is too short, then print the whole word in next line.
-								print(line, this, 1)
-								line = word;
-							} else {
-								// else print the word in this line and the rest in next line.
-								print(line + " " + word.slice(0, i) + (i == 1 ? '' : "-"), this)
-								line = word.slice(i);
-							}
-							break;
-						}
-					}
-				}
-			} else {
-				line += ' ' + word;
-			}
-		});
-		print(line, this);
 	}
 
 	newPage(args) {
@@ -228,6 +157,88 @@ class TridentPen {
 			["_moveTo", [20, 12]],
 			["fillRect", [170, 1 * PT]],
 		]
+	}
+}
+
+class TridentLayout {
+	constructor(tp) {
+		this.tp = tp;
+	}
+
+	text(text) {
+		var tp = this.tp;
+
+		function print(t, fit) {
+			// fit: fit text to page width
+
+			// init
+			t = t.trim();
+			var ctx = tp._ctx()[2];
+
+			// get the parmeters we need.
+			var new_y_pos = tp.config.pen.pos[2] - tp.config.margin.top + tp.config.font_size * PT;
+			var width = ctx.measureText(t).width;
+			var max_width = (tp.config.paper_size[0] - tp._ctx()[0] - tp.config.margin.right);
+
+			// get the parmeters for scalling progress.
+			var delta_width = max_width - width; // positive if text is too short, negative if text is too long
+			var space_width = ctx.measureText(' ').width;
+			var space_num = t.split(' ').length - 1;
+			var delta_space_width = Math.min(delta_width / space_num, 1.5); // prevent infinity.
+
+			// if need scalling
+			if (fit) {
+				space_width += delta_space_width;
+			}
+
+			// print, and scalling if need.
+			var words = t.split(' ');
+			words.forEach(word => {
+				var word_width = ctx.measureText(word).width;
+				tp.drawText([word]);
+				tp.move([word_width + space_width, 0]);
+			})
+
+			// new line.
+			tp.moveTo([0, new_y_pos]);
+		}
+
+		var lst = text.split(' ');
+		var line = "";
+
+		lst.forEach(word => {
+			if (tp._testText(line + " " + word) == false) {
+				if (tp._testText(line + " ") == false) {
+					// if line too long is because of the adding space, then print line without space
+					print(line, 1);
+					line = word;
+				} else {
+					for (var i = 1; i < word.length; i++) {
+						// adding letter by letter
+						if (tp._testText(line + " " + word.slice(0, i) + '-') == false) {
+							// if line too long is because of the adding letter, then print line without this letter.
+							if (word.slice(i).length <= 2) {
+								// if the rest of the word is too short, then print the whole word in this line.
+								print(line + " " + word, 1)
+								line = "";
+							} else if (word.slice(0, i).length <= 2) {
+								// if the word in this line is too short, then print the whole word in next line.
+								print(line, 1)
+								line = word;
+							} else {
+								// else print the word in this line and the rest in next line.
+								print(line + " " + word.slice(0, i) + (i == 1 ? '' : "-"))
+								line = word.slice(i);
+							}
+							break;
+						}
+					}
+				}
+			} else {
+				line += ' ' + word;
+			}
+		});
+		print(line);
 	}
 }
 
