@@ -10,7 +10,91 @@ class TridentPen {
 		this.pages = []; // store all pages in this document (canvas)
 	}
 
-	new_page(args) {
+	_testText(text) {
+		var [x, y, ctx] = this._ctx();
+
+		var text_width = (this.config.paper_size[0] - x - this.config.margin.right);
+
+		if (ctx.measureText(text).width <= text_width)
+			return ctx.measureText(text).width;
+		return false;
+	}
+
+	write(text) {
+		function print(t, _this, fit) {
+			// fit: fit text to page width
+
+			// init
+			t = t.trim();
+			var ctx = _this._ctx()[2];
+
+			// get the parmeters we need.
+			var new_y_pos = _this.config.pen.pos[2] - _this.config.margin.top + _this.config.font_size * PT;
+			var width = ctx.measureText(t).width;
+			var max_width = (_this.config.paper_size[0] - _this._ctx()[0] - _this.config.margin.right);
+
+			// get the parmeters for scalling progress.
+			var delta_width = max_width - width; // positive if text is too short, negative if text is too long
+			var space_width = ctx.measureText(' ').width;
+			var space_num = t.split(' ').length - 1;
+			var delta_space_width = Math.min(delta_width / space_num, 1.5); // prevent infinity.
+
+			// if need scalling
+			if (fit) {
+				space_width += delta_space_width;
+			}
+
+			// print, and scalling if need.
+			var words = t.split(' ');
+			words.forEach(word => {
+				var word_width = ctx.measureText(word).width;
+				_this.drawText([word]);
+				_this.move([word_width + space_width, 0]);
+			})
+
+			// new line.
+			_this.moveTo([0, new_y_pos]);
+		}
+
+		var lst = text.split(' ');
+		var line = "";
+
+		lst.forEach(word => {
+			if (this._testText(line + " " + word) == false) {
+				if (this._testText(line + " ") == false) {
+					// if line too long is because of the adding space, then print line without space
+					print(line, this, 1);
+					line = word;
+				} else {
+					for (var i = 1; i < word.length; i++) {
+						// adding letter by letter
+						if (this._testText(line + " " + word.slice(0, i) + '-') == false) {
+							// if line too long is because of the adding letter, then print line without this letter.
+							if (word.slice(i).length <= 2) {
+								// if the rest of the word is too short, then print the whole word in this line.
+								print(line + " " + word, this, 1)
+								line = "";
+							} else if (word.slice(0, i).length <= 2) {
+								// if the word in this line is too short, then print the whole word in next line.
+								print(line, this, 1)
+								line = word;
+							} else {
+								// else print the word in this line and the rest in next line.
+								print(line + " " + word.slice(0, i) + (i == 1 ? '' : "-"), this)
+								line = word.slice(i);
+							}
+							break;
+						}
+					}
+				}
+			} else {
+				line += ' ' + word;
+			}
+		});
+		print(line, this);
+	}
+
+	newPage(args) {
 		var canvas = document.createElement("canvas");
 		canvas.innerText = "You Browser doesn't support CANVAS!";
 
@@ -22,7 +106,7 @@ class TridentPen {
 			.config.high_dpi);
 
 		canvas.id = this.pages.length;
-		canvas.classList="Trident-page";
+		canvas.classList = "Trident-page";
 		this.div.appendChild(canvas);
 		this.pages.push(canvas);
 
@@ -39,15 +123,20 @@ class TridentPen {
 			});
 		}
 
-		this.move_pen([0, 0]);
+		this.moveTo([0, 0]);
 	}
 
-	move_pen([new_x, new_y]) {
-		this.config.pen.pos[1] = this.config.margin[0] + new_x;
-		this.config.pen.pos[2] = this.config.margin[2] + new_y;
+	move([x, y]) {
+		this.config.pen.pos[1] += x;
+		this.config.pen.pos[2] += y;
 	}
 
-	_move_pen([new_x, new_y]) {
+	moveTo([new_x, new_y]) {
+		this.config.pen.pos[1] = this.config.margin.left + new_x;
+		this.config.pen.pos[2] = this.config.margin.top + new_y;
+	}
+
+	_moveTo([new_x, new_y]) {
 		// no margin
 		this.config.pen.pos[1] = new_x;
 		this.config.pen.pos[2] = new_y;
@@ -59,51 +148,52 @@ class TridentPen {
 		const ctx = canvas.getContext('2d');
 
 		ctx.fillStyle = this.config.pen.color;
+		ctx.font = `${this.config.font_size*0.25}pt ` + this.config.pen.font;
 
 		return [x, y, ctx];
 	}
 
-	set_color([color]) {
+	setColor([color]) {
 		this.config.pen.color = color;
 	}
 
-	draw_text([text, font_size]) {
+	drawText([text, font_size]) {
 		var [x, y, ctx] = this._ctx();
 
-		ctx.font = `${font_size*0.25}pt ` + this.config.pen.font;
+		ctx.font = `${(font_size?font_size:this.config.font_size)*0.25}pt ` + this.config.pen.font;
 		ctx.fillText(text, x, y);
 	}
 
-	draw_arc([radius, startAngle, endAngle, anticlockwise]) {
+	drawArc([radius, startAngle, endAngle, anticlockwise]) {
 		var [x, y, ctx] = this._ctx();
 
 		ctx.arc(x, y, radius, startAngle, endAngle, Boolean(anticlockwise));
 	}
 
-	draw_rect([width, height]) {
+	drawRect([width, height]) {
 		var [x, y, ctx] = this._ctx();
 
 		ctx.strokeRect(x, y, width, height);
 	}
 
-	fill_rect([width, height]) {
+	fillRect([width, height]) {
 		var [x, y, ctx] = this._ctx();
 
 		ctx.fillRect(x, y, width, height);
 	}
 
-	clear_rect([width, height]) {
+	clearRect([width, height]) {
 		ctx.clearRect(x, y, width, height);
 	}
 
-	svg_stroke([path_str]) {
+	svgStroke([path_str]) {
 		var [x, y, ctx] = this._ctx();
 
 		var p = new Path2D(`M${x} ${y} ` + path_str);
 		ctx.stroke(p);
 	}
 
-	svg_fill([path_str]) {
+	svgFill([path_str]) {
 		var [x, y, ctx] = this._ctx();
 
 		var p = new Path2D(`M${x} ${y} ` + path_str);
@@ -120,7 +210,13 @@ class TridentPen {
 		zoom_ratio: 1, // change to match your screen size (auto calculated in Trident).
 		high_dpi: 5, // Scale for high resulution screen. --- Scale 5 times, and then zoom out 1/5 times, so you get a high-resolution image.
 		paper_size: [210, 297], // [width, height] mm
-		margin: [20, 20, 20, 20], // [left, right, top, bottom] mm
+		font_size: 12,
+		margin: {
+			left: 27, // mm
+			right: 27,
+			top: 20,
+			bottom: 20
+		},
 		pen: {
 			page_border: false, // decide whether to draw page border
 			pos: [0, 0, 0], // [page, width(x), height(y)] mm
@@ -129,8 +225,8 @@ class TridentPen {
 
 		},
 		format_page: [
-			["_move_pen", [20, 12]],
-			["fill_rect", [170, 1 * PT]],
+			["_moveTo", [20, 12]],
+			["fillRect", [170, 1 * PT]],
 		]
 	}
 }
@@ -241,9 +337,8 @@ class Trident {
 
 	reparse(code) {
 		code = this._normalizeCode(code);
-		console.log(code);
 		code = this._parseCode(code);
 
-		console.log(code);
+		// console.log(code);
 	}
 }

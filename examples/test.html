@@ -23,11 +23,10 @@
 		tp = new TridentPen(trident, TridentPen.a4);
 		tp.config.zoom_ratio = tri.config.zoom_ratio;
 		tp.config.pen.page_border="black";
-		tp.new_page();
-		tp.draw_text(['   Land is a precious resource and how to use land reasonably is always an important topic. By', 12]);
-		tp.move_pen([0,12*PT])
-		tp.draw_text(['coordination of nature, society and economy, land planning focuses on maximizing land value', 12]);
-
+		tp.newPage();
+		tp.write('\b    Land is a precious resource and how to use land reasonably is always an important topic. By coordination of nature, society and economy, land planning focuses on maximizing land value with a perspective of sustainable economic development. Therefore, to assist decision maker in determining the best use of the given parcel of land, we need to consider a set of metrics and decide the importance/weight of each metric. We also have to produce a specific land use plan based on those metrics in order to verify the applicability of our metrics. It is also necessary that we test the sensitivity and generalizability of our model by adding external factors and changing regions.')
+		tp.write('\n')
+		tp.write(`\b    We first analyzed the factors affecting the value of a land use option. With references to the ESG and relevant national standards, we formulated 3 first-level metrics: Economy, Society and Environment. By analyzing each of them we in turn formulated 8 second-level metrics (“Second-Level Metrics”): cost, long-term benefits, short-term benefits, ROI period, jobs provided, entertainment, greening and pollution. Each Second-Level Metric has a different weight to the Overall-Score of a land use option, so we introduced the Entropy Weight Model to determine their weights.`);
 		
 		tri.reparse(String.raw`
 
