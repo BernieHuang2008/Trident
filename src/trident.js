@@ -169,7 +169,7 @@ class TridentLayout {
 		var tp = this.tp;
 
 		function print(t, fit) {
-			// fit: fit text to page width
+			// fit: fit text to page width or not.
 
 			// init
 			t = t.trim();
